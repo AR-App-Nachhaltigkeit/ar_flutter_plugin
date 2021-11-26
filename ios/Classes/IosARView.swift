@@ -3,7 +3,7 @@ import UIKit
 import Foundation
 import ARKit
 import Combine
-import ARCoreCloudAnchors
+//import ARCoreCloudAnchors
 
 class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureRecognizerDelegate, ARSessionDelegate {
     let sceneView: ARSCNView
@@ -20,7 +20,7 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
     var anchorCollection = [String: ARAnchor]() //Used to bookkeep all anchors created by Flutter calls
     
     private var cloudAnchorHandler: CloudAnchorHandler? = nil
-    private var arcoreSession: GARSession? = nil
+    private var arcoreSession: String = ""
     private var arcoreMode: Bool = false
     private var configuration: ARWorldTrackingConfiguration!
     private var tappedPlaneAnchorAlignment = ARPlaneAnchor.Alignment.horizontal // default alignment
@@ -156,7 +156,7 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
                 }
                 break
             case "initGoogleCloudAnchorMode":
-                arcoreSession = try! GARSession.session()
+                /*arcoreSession = try! ""//GARSession.session()
 
                 if (arcoreSession != nil){
                     if let token = JWTGenerator().generateWebToken(){
@@ -173,15 +173,15 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
                 } else {
                     sessionManagerChannel.invokeMethod("onError", arguments: ["Error initializing Google AR Session"])
                 }
-                    
+                    */
                 break
             case "uploadAnchor":
                 if let anchorName = arguments!["name"] as? String, let anchor = anchorCollection[anchorName] {
                     print("---------------- HOSTING INITIATED ------------------")
                     if let ttl = arguments!["ttl"] as? Int {
-                        cloudAnchorHandler?.hostCloudAnchorWithTtl(anchorName: anchorName, anchor: anchor, listener: cloudAnchorUploadedListener(parent: self), ttl: ttl)
+                        //cloudAnchorHandler?.hostCloudAnchorWithTtl(anchorName: anchorName, anchor: anchor, listener: cloudAnchorUploadedListener(parent: self), ttl: ttl)
                     } else {
-                        cloudAnchorHandler?.hostCloudAnchor(anchorName: anchorName, anchor: anchor, listener: cloudAnchorUploadedListener(parent: self))
+                        //cloudAnchorHandler?.hostCloudAnchor(anchorName: anchorName, anchor: anchor, listener: cloudAnchorUploadedListener(parent: self))
                     }
                 }
                 result(true)
@@ -334,13 +334,13 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        if (arcoreMode) {
+        /*if (arcoreMode) {
             do {
-                try arcoreSession!.update(frame)
+                try //arcoreSession!.update(frame)
             } catch {
                 print(error)
             }
-        }
+        }*/
     }
 
     func addNode(dict_node: Dictionary<String, Any>, dict_anchor: Dictionary<String, Any>? = nil) -> Future<Bool, Never> {
@@ -677,8 +677,8 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
             self.parent = parent
         }
         
-        func onCloudTaskComplete(anchorName: String?, anchor: GARAnchor?) {
-            if let cloudState = anchor?.cloudState {
+        func onCloudTaskComplete(anchorName: String?, anchor: String?) {
+            /*if let cloudState = anchor?.cloudState {
                 if (cloudState == GARCloudAnchorState.success) {
                     var args = Dictionary<String, String?>()
                     args["name"] = anchorName
@@ -689,19 +689,21 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
                     parent.sessionManagerChannel.invokeMethod("onError", arguments: ["Error uploading anchor, state: \(parent.decodeCloudAnchorState(state: cloudState))"])
                     return
                 }
-            }
+            }*/
         }
     }
 
     private class cloudAnchorDownloadedListener: CloudAnchorListener {
+    
+        
         private var parent: IosARView
         
         init(parent: IosARView) {
             self.parent = parent
         }
         
-        func onCloudTaskComplete(anchorName: String?, anchor: GARAnchor?) {
-            if let cloudState = anchor?.cloudState {
+        func onCloudTaskComplete(anchorName: String?, anchor: String?) {
+            /*if let cloudState = anchor?.cloudState {
                 if (cloudState == GARCloudAnchorState.success) {
                     let newAnchor = ARAnchor(transform: anchor!.transform)
                     // Register new anchor on the Flutter side of the plugin
@@ -719,12 +721,13 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
                     parent.sessionManagerChannel.invokeMethod("onError", arguments: ["Error downloading anchor, state \(cloudState)"])
                     return
                 }
-            }
+            }*/
         }
     }
     
-    func decodeCloudAnchorState(state: GARCloudAnchorState) -> String {
-        switch state {
+    func decodeCloudAnchorState(state: String) -> String {
+        return "Success"
+/*        switch state {
         case .errorCloudIdNotFound:
             return "Cloud anchor id not found"
         case .errorHostingDatasetProcessingFailed:
@@ -753,7 +756,7 @@ class IosARView: NSObject, FlutterPlatformView, ARSCNViewDelegate, UIGestureReco
             return "No match"
         @unknown default:
             return "Unknown"
-        }
+        }*/
     }
 }
 

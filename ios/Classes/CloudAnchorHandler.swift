@@ -1,24 +1,24 @@
 import Foundation
-import ARCoreCloudAnchors
+//import ARCoreCloudAnchors
 
 // Listener that can be attached to hosing or resolving processes
 protocol CloudAnchorListener {
     // Callback to invoke when cloud anchor task finishes
-    func onCloudTaskComplete(anchorName: String?, anchor: GARAnchor?)
+    func onCloudTaskComplete(anchorName: String?, anchor: String?)
 }
 
 // Class for handling logic regarding the Google Cloud Anchor API
-class CloudAnchorHandler: NSObject, GARSessionDelegate {
-    private var session: GARSession
-    private var pendingAnchors = [GARAnchor: (String?, CloudAnchorListener?)]()
+class CloudAnchorHandler: NSObject {
+    private var session: String
+    private var pendingAnchors = [String: (String?, CloudAnchorListener?)]()
     
-    init(session: GARSession){
+    init(session: String){
         self.session = session
     }
     
-    func hostCloudAnchor(anchorName: String, anchor: ARAnchor, listener: CloudAnchorListener?) {
+    func hostCloudAnchor(anchorName: String, anchor: String, listener: CloudAnchorListener?) {
         do {
-            let newAnchor = try self.session.hostCloudAnchor(anchor)
+            let newAnchor = ""//try self.session.hostCloudAnchor(anchor)
             // Register listener so it is invoked when the operation finishes
             pendingAnchors[newAnchor] = (anchorName, listener)
         } catch {
@@ -26,9 +26,9 @@ class CloudAnchorHandler: NSObject, GARSessionDelegate {
         }
     }
     
-    func hostCloudAnchorWithTtl(anchorName: String, anchor: ARAnchor, listener: CloudAnchorListener?, ttl: Int) {
+    func hostCloudAnchorWithTtl(anchorName: String, anchor: String, listener: CloudAnchorListener?, ttl: Int) {
         do {
-            let newAnchor = try self.session.hostCloudAnchor(anchor, ttlDays: ttl)
+            let newAnchor = ""//try self.session.hostCloudAnchor(anchor, ttlDays: ttl)
             // Register listener so it is invoked when the operation finishes
             pendingAnchors[newAnchor] = (anchorName, listener)
         } catch {
@@ -38,7 +38,7 @@ class CloudAnchorHandler: NSObject, GARSessionDelegate {
     
     func resolveCloudAnchor(anchorId: String, listener: CloudAnchorListener?) {
         do {
-            let newAnchor = try self.session.resolveCloudAnchor(anchorId)
+            let newAnchor = ""//try self.session.resolveCloudAnchor(anchorId)
             // Register listener so it is invoked when the operation finishes
             pendingAnchors[newAnchor] = (nil, listener)
         } catch {
@@ -47,19 +47,19 @@ class CloudAnchorHandler: NSObject, GARSessionDelegate {
         
     }
         
-    func session(_ session: GARSession, didHost anchor: GARAnchor) {
+    func session(_ session: String, didHost anchor: String) {
         pendingAnchors[anchor]?.1?.onCloudTaskComplete(anchorName: pendingAnchors[anchor]?.0, anchor: anchor)
     }
     
-    func session(_ session: GARSession, didFailToHost anchor: GARAnchor) {
+    func session(_ session: String, didFailToHost anchor: String) {
         pendingAnchors[anchor]?.1?.onCloudTaskComplete(anchorName: pendingAnchors[anchor]?.0, anchor: anchor)
     }
     
-    func session(_ session: GARSession, didResolve anchor: GARAnchor) {
+    func session(_ session: String, didResolve anchor: String) {
         pendingAnchors[anchor]?.1?.onCloudTaskComplete(anchorName: pendingAnchors[anchor]?.0, anchor: anchor)
     }
     
-    func session(_ session: GARSession, didFailToResolve anchor: GARAnchor) {
+    func session(_ session: String, didFailToResolve anchor: String) {
         pendingAnchors[anchor]?.1?.onCloudTaskComplete(anchorName: pendingAnchors[anchor]?.0, anchor: anchor)
     }
     
